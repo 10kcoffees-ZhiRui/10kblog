@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/10kcoffees-ZhiRui/10kblog/issues"
   },
-  "homepage": "https://github.com/10kcoffees-ZhiRui/10kblog#readme"
+  "homepage": "https://github.com/10kcoffees-ZhiRui/10kblog#readme",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
 }
