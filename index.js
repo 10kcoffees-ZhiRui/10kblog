@@ -23,6 +23,7 @@ console.log("App listening on port 8080");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
+app.use(express.static(__dirname + '/public'));
 
 app.get('/api', function(req, res) {
     //res.send('Welcome to my world... (BLOG)');
@@ -44,12 +45,12 @@ app.post('/api', function(req, res, next) {
     }
 );
 
-app.delete('/api:todo_id', function(req, res) {
+app.delete('/api/:todo_id', function(req, res) {
     blogModel.remove({
         _id : req.params.blogModel_id
     });
 });
 
 app.get('*', function(req, res) {
-    res.sendFile('index.html', { root: '/Users/ttcdev/Documents/blog'});
+    res.sendFile('./public/index.html', { root: '/Users/ttcdev/Documents/blog'});
 });

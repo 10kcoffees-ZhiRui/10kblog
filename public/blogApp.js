@@ -7,11 +7,10 @@ var blogApp = angular.module('blogApp', [])
     console.log('running controller');
 
     $http.get('/api')
-        .success(function (data) {
+        .then(function (data) {
             $scope.entries = data;
             console.log(data);
-        })
-        .error(function (data) {
+        }, function (data) {
             console.log('Error: ' + data);
         });
 
@@ -19,12 +18,11 @@ var blogApp = angular.module('blogApp', [])
     $scope.createEntry = function () {
         console.log('creating entry');
         $http.post('/api', $scope.formData)
-            .success(function (data) {
+            .then (function (data) {
                 $scope.formData = {};
                 $scope.entries = data;
                 console.log(data);
-            })
-            .error(function (data) {
+            }, function (data) {
                 console.log('Error: ' + data);
             });
     };
