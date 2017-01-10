@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
-var bodyParser =require('body-parser');
+var bodyParser = require('body-parser');
 
 
 mongoose.connect('mongodb://localhost/db');
@@ -21,26 +21,21 @@ var blogModel = mongoose.model('Blog', {
 app.listen(8080);
 console.log("App listening on port 8080");
 
-app.get('*', function(req, res) {
-    res.sendFile('index.html', { root: '/Users/ttcdev/Documents/blog'});
-});
-
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false}));
 
 app.get('/api', function(req, res) {
     //res.send('Welcome to my world... (BLOG)');
 
     blogModel.find(function(err, entries) {
         if (err) res.send(err);
-        res.send(entries);
+        res.json(entries);
     });
 });
 
 app.post('/api', function(req, res, next) {
-    blogModel.create({
-        title : req.body.title,
-        // add more stuff later
-        },
+    console.log(req.body);
+    blogModel.create(req.body ,
         function (err, entry) {
             if (err) res.send(err);
             res.end();
@@ -48,3 +43,13 @@ app.post('/api', function(req, res, next) {
     );
     }
 );
+
+app.delete('/api:todo_id', function(req, res) {
+    blogModel.remove({
+        _id : req.params.blogModel_id
+    });
+});
+
+app.get('*', function(req, res) {
+    res.sendFile('index.html', { root: '/Users/ttcdev/Documents/blog'});
+});

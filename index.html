@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="blogApp">
 <head>
     <meta charset="UTF-8">
     <title>Super Blog</title>
     <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js'></script>
+    <script type ="text/javascript" src='blogApp.js'></script>
 </head>
-<body>
-<h1>{{hello}}</h1>
+<body  ng-controller="blogController">
 
-    <input type="text" ng-model="hello"/>
-    What is love? Baby don't hurt me
+    {{ "What is love? Baby don't hurt meeee" }}
+
+    <div id="post-list" class="row">
+        <div class="post" ng-repeat="entry in entries">
+            <label>
+                <input type="checkbox" ng-click="deleteEntry(entry._id)">
+            </label>
+        </div>
+    </div>
+
+    <div id="blog-form" class="column">
+        <form>
+            <div style="vertical-align: middle">
+                <input type="text" ng-model="formData.title">
+                <textarea rows="10" column="200" maxlength="160" ng-model="formData.content" placeholder="Create an exciting blog post!"></textarea>
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="talk()">Create Post</button>
+            </div>
+        </form>
+    </div>
 
 </body>
 
