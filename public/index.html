@@ -5,30 +5,74 @@
     <title>Super Blog</title>
     <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js'></script>
     <script type ="text/javascript" src='blogApp.js'></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 </head>
 <body>
 
     {{ "What is love? Baby don't hurt meeee" }}
 
-    <div id="post-list" class="row">
-        Number of Posts: {{entries.length}}
-        <div class="column" ng-repeat="entry in entries">
-                <text>{{entry.title}}</text>
-                <text>{{entry.content}}</text>
-                <image ng-show="{{entry.image}}" height="200" width="200" src="{{entry.image}}"></image>
-                <button ng-click="deleteEntry(entry._id)">Delete Entry</button>
-        </div>
+
+    <div>
+        <form>
+            <div class="form-group">
+             <label>Title</label>
+             <input type="text" class="form-control" ng-model="formData.title">
+            </div>
+            <div class="form-group">
+               label>Content</label>
+                <textarea class="form-control" rows="3" maxlength="160" ng-model="formData.content" placeholder="Create an exciting blog post!"></textarea>
+            </div>
+            <div class="form-group">
+                <label>File input</label>
+                <input type="file" name="pic" accept="image/*" fileread="formData.image">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" ng-click="createEntry()">Create Post</button>
+        </form>
     </div>
 
-    <div id="blog-form" class="column">
-        <form>
-            <div style="vertical-align: middle">
-                <input type="text" ng-model="formData.title">
-                <textarea rows="10" column="200" maxlength="160" ng-model="formData.content" placeholder="Create an exciting blog post!"></textarea>
-                <input type="file" name="pic" accept="image/*" fileread="formData.image">
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="createEntry()">Create Post</button>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-6">
+                <div id="postlist">
+                    <div class="panel" ng-repeat="entry in entries">
+                        <div class="panel-heading">
+                            <div class="text-center">
+                                <div class="row">
+                                    <div class="col-sm-9">
+                                        <h3 class="pull-left">{{entry.title}}</h3>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <h4 class="pull-right">
+                                            <small><em>{{entry.date}}</em></small>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <a  ng-show="{{entry.hasOwnProperty('image')}}" class="thumbnail">
+                                <image  src="{{entry.image}}"></image>
+                            </a>
+                            {{entry.content}}
+                        </div>
+
+                        <div class="panel-footer">
+                            <button class="btn btn-danger" ng-click="deleteEntry(entry._id)">Delete Entry</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
+            <div class="col-md-1"></div>
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
     </div>
 
 </body>

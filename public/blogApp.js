@@ -5,6 +5,7 @@ var blogApp = angular.module('blogApp', [])
     $scope.formData = {};
     $scope.entries = [];
 
+
     console.log('running controller');
 
     $http.get('/api')
@@ -62,3 +63,4 @@ var blogApp = angular.module('blogApp', [])
         }
     }
 }]);
+

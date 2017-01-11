@@ -18,7 +18,10 @@
   "homepage": "https://github.com/10kcoffees-ZhiRui/10kblog#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "bootstrap": "^3.3.7",
+    "dateformat": "^2.0.0",
     "express": "^4.14.0",
+    "jquery": "^3.1.1",
     "mongoose": "^4.7.6"
   }
 }
