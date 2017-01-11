@@ -39,15 +39,26 @@ app.post('/api', function(req, res, next) {
     blogModel.create(req.body ,
         function (err, entry) {
             if (err) res.send(err);
-            res.end();
+
+            blogModel.find(function(err, entries) {
+                if (err) res.send(err);
+                res.json(entries);
+            });
         }
     );
     }
 );
 
-app.delete('/api/:todo_id', function(req, res) {
+app.delete('/api/:blogModel_id', function(req, res) {
+    console.log(req.params);
     blogModel.remove({
         _id : req.params.blogModel_id
+    }, function(err) {
+        if (err) res.send(err);
+        blogModel.find(function(err, entries) {
+            if (err) res.send(err);
+            res.json(entries);
+        });
     });
 });
 
