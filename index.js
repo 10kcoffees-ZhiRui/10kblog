@@ -34,18 +34,31 @@ app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.get('/api/:blogModel_id', function(req, res) {
 
     blogModel.findById({
-        _id: req.params.blodModel_id
+        _id: req.params.blogModel_id
     }, 'posts', function(err, entries) {
             if (err) res.send(err);
             res.json(entries);
     });
 });
 
+app.get('/api/switchBlog/:blogModel_id', function(req, res) {
+
+    console.log(req);
+
+    blogModel.findById({
+        _id: req.params.blogModel_id
+    }, 'name posts', function(err, blog) {
+        if (err) res.send(err);
+        console.log(blog);
+        res.json(blog);
+    });
+});
+
 app.get('/api', function(req, res) {
-    blogModel.findOne(
-        {}, function(err, blog) {
+    blogModel.find(
+        {}, '_id name', function(err, blogs) {
             if (err) res.send(err);
-            res.json(blog);
+            res.json(blogs);
         }
     );
 });

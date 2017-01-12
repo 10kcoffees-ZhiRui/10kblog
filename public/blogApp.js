@@ -6,7 +6,8 @@ var blogApp = angular.module('blogApp', [])
     $scope.entries = [];
     $scope.currBlogId = "";
     $scope.blogData = {};
-    $scope.blogName = ""
+    $scope.blogName = "";
+    $scope.blogIds= [];
 
 
     console.log('running controller');
@@ -15,21 +16,49 @@ var blogApp = angular.module('blogApp', [])
         .then(function (data){
             console.log(data);
             if (data !== null) {
-                $scope.currBlogId = data.data._id;
-                $scope.blogName = data.data.name;
+                data.data.forEach(function(blog) {
+                    $scope.blogIds.push(blog);
+                });
+                $scope.currBlogId = $scope.blogIds[0]._id;
+
+                console.log($scope.blogIds);
+
+                $http.get('/api/switchBlog/' + $scope.currBlogId)
+                    .then (function(data) {
+                        $scope.entries = data.data.posts;
+                        $scope.currBlogId = data.data._id;
+                        $scope.blogName = data.data.name;
+                        console.log(data);
+                    }, function (data) {
+                        console.log('Error: ' + data);
+                    });
             }
         }, function (data) {
             console.log('Error: ' + data);
         });
 
 
-    $http.get('/api' + $scope.currBlogId)
+
+    $scope.switchBlog = function (id) {
+        $http.get('/api/switchBlog/' + id)
+            .then (function(data) {
+                $scope.currBlogId = id;
+                $scope.entries = data.data.posts;
+                $scope.currBlogId = data.data._id;
+                $scope.blogName = data.data.name;
+                console.log(data);
+            }, function (data) {
+                console.log('Error: ' + data);
+            });
+    };
+
+ /*   $http.get('/api' + $scope.currBlogId)
         .then(function (data) {
             $scope.entries = data.data.posts;
             console.log(data.data);
         }, function (data) {
             console.log('Error: ' + data);
-        });
+        });*/
 
     $scope.createBlog = function() {
         console.log('creating blog');
@@ -39,6 +68,10 @@ var blogApp = angular.module('blogApp', [])
                 $scope.entries = data.data.posts;
                 $scope.currBlogId = data.data._id;
                 $scope.blogName = data.data.name;
+                $scope.blogIds.push({
+                    _id: data.data._id,
+                    name: data.data.name
+                });
                 console.log(data);
             }, function (data) {
             console.log('Error: ' + data);
