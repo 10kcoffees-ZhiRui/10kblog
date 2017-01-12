@@ -4,23 +4,51 @@ var blogApp = angular.module('blogApp', [])
 
     $scope.formData = {};
     $scope.entries = [];
+    $scope.currBlogId = "";
+    $scope.blogData = {};
+    $scope.blogName = ""
 
 
     console.log('running controller');
 
     $http.get('/api')
-        .then(function (data) {
-            $scope.entries = data.data;
-            console.log(data.data);
+        .then(function (data){
+            console.log(data);
+            if (data !== null) {
+                $scope.currBlogId = data.data._id;
+                $scope.blogName = data.data.name;
+            }
         }, function (data) {
             console.log('Error: ' + data);
         });
 
 
+    $http.get('/api' + $scope.currBlogId)
+        .then(function (data) {
+            $scope.entries = data.data.posts;
+            console.log(data.data);
+        }, function (data) {
+            console.log('Error: ' + data);
+        });
+
+    $scope.createBlog = function() {
+        console.log('creating blog');
+        $http.post('/api/createBlog', $scope.blogData)
+            .then (function(data) {
+                $scope.blogData = {};
+                $scope.entries = data.data.posts;
+                $scope.currBlogId = data.data._id;
+                $scope.blogName = data.data.name;
+                console.log(data);
+            }, function (data) {
+            console.log('Error: ' + data);
+        });
+    };
+
 
     $scope.createEntry = function () {
         console.log('creating entry');
-        $http.post('/api', $scope.formData)
+        $http.post('/api/' + $scope.currBlogId, $scope.formData)
             .then (function (data) {
                 $scope.formData = {};
                 $scope.entries = data.data;
@@ -31,7 +59,7 @@ var blogApp = angular.module('blogApp', [])
     };
 
     $scope.deleteEntry = function (id) {
-        $http.delete('/api/' + id)
+        $http.delete('/api/' + $scope.currBlogId + '/' + id)
             .then (function (data) {
                 $scope.entries = data.data;
                 console.log(data);

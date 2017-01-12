@@ -10,12 +10,15 @@ mongoose.connect('mongodb://localhost/db');
 
 
 var blogModel = mongoose.model('Blog', {
-    id: Number,
-    title: String,
-    date: {type: Date, default: Date.now },
-    content: String,
-    image: String
-});
+    name: String,
+    posts: [{
+        id: Number,
+        title: String,
+        date: {type: Date, default: Date.now},
+        content: String,
+        image: String
+    }]}
+);
 
 
 app.listen(8080);
@@ -28,42 +31,84 @@ app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); /
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
-app.get('/api', function(req, res) {
-    //res.send('Welcome to my world... (BLOG)');
+app.get('/api/:blogModel_id', function(req, res) {
 
-    blogModel.find(function(err, entries) {
-        if (err) res.send(err);
-        res.json(entries);
+    blogModel.findById({
+        _id: req.params.blodModel_id
+    }, 'posts', function(err, entries) {
+            if (err) res.send(err);
+            res.json(entries);
     });
 });
 
-app.post('/api', function(req, res, next) {
+app.get('/api', function(req, res) {
+    blogModel.findOne(
+        {}, function(err, blog) {
+            if (err) res.send(err);
+            res.json(blog);
+        }
+    );
+});
+
+app.post('/api/createBlog', function(req, res) {
     console.log(req.body);
-    blogModel.create(req.body ,
-        function (err, entry) {
+    blogModel.create(req.body,
+        function (err, blog) {
             if (err) res.send(err);
 
-            blogModel.find(function(err, entries) {
+            blogModel.findById({
+                _id: blog._id
+            }, 'name posts', function(err, blog) {
                 if (err) res.send(err);
-                res.json(entries);
+                res.json(blog);
+            });
+        }
+    );
+});
+
+app.post('/api/:blogModel_id', function(req, res, next) {
+    console.log(req.body);
+    console.log(req.params.blogModel_id);
+    blogModel.update({
+        _id: req.params.blogModel_id
+    },  {
+        $addToSet: { posts: req.body}
+    }, function (err, entry) {
+            if (err) res.send(err);
+
+            blogModel.findById({
+                _id: req.params.blogModel_id
+            }, 'posts', function(err, blog) {
+                if (err) res.send(err);
+                res.json(blog.posts);
             });
         }
     );
     }
 );
 
-app.delete('/api/:blogModel_id', function(req, res) {
+
+
+app.delete('/api/:blogModel_id/:entry_id', function(req, res) {
     console.log(req.params);
-    blogModel.remove({
+    blogModel.update({
         _id : req.params.blogModel_id
-    }, function(err) {
-        if (err) res.send(err);
-        blogModel.find(function(err, entries) {
+    }, {
+        $pull: {posts: {_id: req.params.entry_id}}
+    }, function (err, entry) {
             if (err) res.send(err);
-            res.json(entries);
-        });
-    });
-});
+
+            blogModel.findById({
+                _id: req.params.blogModel_id
+            }, 'posts', function(err, blog) {
+                if (err) res.send(err);
+                res.json(blog.posts);
+            });
+        }
+    );
+    }
+);
+
 
 app.get('*', function(req, res) {
     res.sendFile('./public/index.html', { root: '/Users/ttcdev/Documents/blog'});
