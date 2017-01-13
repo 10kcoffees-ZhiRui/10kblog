@@ -1,4 +1,4 @@
-var blogApp = angular.module('blogApp', [])
+var blogApp = angular.module('blogApp', ['ui.router'])
 
 .controller('blogController', ['$scope', '$http', function($scope, $http) {
 
@@ -125,3 +125,16 @@ var blogApp = angular.module('blogApp', [])
     }
 }]);
 
+blogApp.config(function ($stateProvider, $urlRouterProvider) {
+    $stateProvider
+        .state('blog', {
+            url: '/blog',
+            templateUrl: 'blog.tpl.html',
+        })
+        .state('login', {
+            url: '/login',
+            templateUrl: 'login.tpl.html'
+        });
+    //$urlRouterProvider.otherwise('/login');
+
+});
