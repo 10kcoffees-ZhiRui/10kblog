@@ -55,7 +55,6 @@ app.get('/api/switchBlog/:blogModel_id', function(req, res) {
         _id: req.params.blogModel_id
     }, 'name posts', function(err, blog) {
         if (err) res.send(err);
-        console.log(blog);
         res.json(blog);
     });
 });
@@ -133,7 +132,22 @@ app.post('/auth/signup', function(req, res) {
                 res.send({ token: createJWT(user) });
         })
     })
-})
+});
+
+app.post('/auth/login', function(req, res) {
+    console.log("checking against db")
+    console.log(req.body);
+    userModel.findOne({ email: req.body.email, password: req.body.password }, function (err, existingUser) {
+        if (existingUser) {
+            res.send({ token: createJWT(existingUser)});
+            return;
+        }
+
+        console.log("does not exist");
+        res.status(401);
+        res.send("Inccorect email or password");
+    });
+});
 
 
 

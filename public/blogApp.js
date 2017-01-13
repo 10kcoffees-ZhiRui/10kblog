@@ -54,17 +54,31 @@ var blogApp = angular.module('blogApp', ['ui.router', 'satellizer'])
                 $scope.newUser = {};
                 $auth.setToken(res);
                 $state.go('blog');
-                $location.path('/register');
             })
             .catch(function(res){
                 $scope.errorMessage = true;
             });
     };
 
+    $scope.loginUser = {};
+    $scope.login = function ()  {
+        console.log("attempting to log in");
+        $auth.login($scope.loginUser)
+            .then(function(res) {
+                $scope.loginUser = {};
+                $auth.setToken(res);
+                $state.go('blog');
+            })
+            .catch(function(res){
+                console.log("incorrect login");
+                alert("Incorrect Login");
+            });
+    };
+
     $scope.logout = function() {
         console.log("logging out");
         $auth.logout().then(function () {
-            $state.go('register');
+            $state.go('login');
         });
     };
 
@@ -162,7 +176,11 @@ blogApp.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'blog.tpl.html',
             data: { requiredLogin: true }
         })
-        .state('register', {
+        .state('login', {
+            url: '/login',
+            templateUrl: 'login.tpl.html',
+        })
+            .state('register', {
             url: '/register',
             templateUrl: 'register.tpl.html'
         });
@@ -183,7 +201,7 @@ blogApp.run(function ($rootScope, $state, $auth) {
             console.log($auth.isAuthenticated());
             if (requiredLogin && !$auth.isAuthenticated()) {
                 event.preventDefault();
-                $state.go('register');
+                $state.go('login');
             }
         });
 });
