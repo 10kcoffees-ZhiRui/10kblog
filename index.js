@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var jwt = require('jwt-simple');
 
 
 mongoose.connect('mongodb://localhost/db');
@@ -19,6 +20,11 @@ var blogModel = mongoose.model('Blog', {
         image: String
     }]}
 );
+
+var userModel = mongoose.model('User', {
+    email: String,
+    password: String
+});
 
 
 app.listen(8080);
@@ -99,6 +105,35 @@ app.post('/api/:blogModel_id', function(req, res, next) {
     );
     }
 );
+
+function createJWT(user) {
+    var payload = {
+        sub: user._id,
+    };
+    return jwt.encode(payload, "secret");
+}
+
+app.post('/auth/signup', function(req, res) {
+    console.log(req.body.email);
+    userModel.findOne({ email: req.body.email}, function (err, existingUser) {
+
+        if (existingUser) {
+            console.error('User exists already!');
+            res.status(409);
+            res.send({ message: 'Email is already taken'});
+            return;
+        }
+
+        userModel.create(req.body,
+            function (err, user) {
+                if (err) {
+                    console.error('Error saving the user!');
+                    res.status(500).send({ message: err.message });
+                }
+                res.send({ token: createJWT(user) });
+        })
+    })
+})
 
 
 

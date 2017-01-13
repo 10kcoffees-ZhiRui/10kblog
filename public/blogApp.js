@@ -1,6 +1,6 @@
-var blogApp = angular.module('blogApp', ['ui.router'])
+var blogApp = angular.module('blogApp', ['ui.router', 'satellizer'])
 
-.controller('blogController', ['$scope', '$http', function($scope, $http) {
+.controller('blogController', ['$scope', '$http', '$auth', '$state', function($scope, $http, $auth, $state) {
 
     $scope.formData = {};
     $scope.entries = [];
@@ -37,6 +37,36 @@ var blogApp = angular.module('blogApp', ['ui.router'])
             console.log('Error: ' + data);
         });
 
+
+    $scope.authenticate = function(provider) {
+        $auth.authenticate(provider);
+    };
+
+// register new user
+    $scope.newUser = {};
+    $scope.errorMessage = false;
+    $scope.register = function(){
+        // send signup POST request to /auth/signup
+        console.log($scope.newUser);
+        $auth.signup($scope.newUser)
+            .then(function(res){
+                // set localstorage token
+                $scope.newUser = {};
+                $auth.setToken(res);
+                $state.go('blog');
+                $location.path('/register');
+            })
+            .catch(function(res){
+                $scope.errorMessage = true;
+            });
+    };
+
+    $scope.logout = function() {
+        console.log("logging out");
+        $auth.logout().then(function () {
+            $state.go('register');
+        });
+    };
 
 
     $scope.switchBlog = function (id) {
@@ -130,11 +160,30 @@ blogApp.config(function ($stateProvider, $urlRouterProvider) {
         .state('blog', {
             url: '/blog',
             templateUrl: 'blog.tpl.html',
+            data: { requiredLogin: true }
         })
-        .state('login', {
-            url: '/login',
-            templateUrl: 'login.tpl.html'
+        .state('register', {
+            url: '/register',
+            templateUrl: 'register.tpl.html'
         });
     //$urlRouterProvider.otherwise('/login');
 
+});
+
+
+blogApp.run(function ($rootScope, $state, $auth) {
+    $rootScope.$on('$stateChangeStart',
+        function (event, toState) {
+            var requiredLogin = false;
+            // check if this state need login
+            if (toState.data && toState.data.requiredLogin)
+                requiredLogin = true;
+
+            // if yes and if this user is not logged in, redirect him to login page
+            console.log($auth.isAuthenticated());
+            if (requiredLogin && !$auth.isAuthenticated()) {
+                event.preventDefault();
+                $state.go('register');
+            }
+        });
 });
