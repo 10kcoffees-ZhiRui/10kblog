@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var jwt = require('jwt-simple');
 
 
-mongoose.connect('mongodb://localhost/db');
+mongoose.connect('mongodb://localhost:27017/db');
 
 //var db = mongoose.connection;
 
@@ -47,7 +47,7 @@ app.get('/api/:blogModel_id', function(req, res) {
     });
 });
 
-app.get('/api/switchBlog/:blogModel_id', function(req, res) {
+app.get('/api/blogs/:blogModel_id', function(req, res) {
 
     console.log(req);
 
@@ -84,7 +84,7 @@ app.post('/api/createBlog', function(req, res) {
     );
 });
 
-app.post('/api/:blogModel_id', function(req, res, next) {
+app.post('/api/blogs/:blogId/entries', function(req, res, next) {
     console.log(req.body);
     console.log(req.params.blogModel_id);
     blogModel.update({
@@ -151,7 +151,7 @@ app.post('/auth/login', function(req, res) {
 
 
 
-app.delete('/api/:blogModel_id/:entry_id', function(req, res) {
+app.delete('/api/blogs/:blogModel_id/entries/:entry_id', function(req, res) {
     console.log(req.params);
     blogModel.update({
         _id : req.params.blogModel_id
